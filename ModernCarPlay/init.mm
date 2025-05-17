@@ -48,6 +48,30 @@ namespace mc_DBDashboardHomeViewController {
     }
 }
 
+namespace mc_DBStatusBarStateProvider {
+    namespace _radarItemVisible {
+        BOOL custom(id self, SEL _cmd) {
+            return YES;
+        }
+        void swizzle(void) {
+            Method method = class_getInstanceMethod(objc_lookUpClass("DBStatusBarStateProvider"), sel_registerName("_radarItemVisible"));
+            assert(method != NULL);
+            method_setImplementation(method, reinterpret_cast<IMP>(custom));
+        }
+    }
+
+    namespace _radarItemEnabled {
+        BOOL custom(id self, SEL _cmd) {
+            return YES;
+        }
+        void swizzle(void) {
+            Method method = class_getInstanceMethod(objc_lookUpClass("DBStatusBarStateProvider"), sel_registerName("_radarItemEnabled"));
+            assert(method != NULL);
+            method_setImplementation(method, reinterpret_cast<IMP>(custom));
+        }
+    }
+}
+
 __attribute__((constructor)) static void init() {
 #if DEBUG
     if (static_cast<NSNumber *>(NSProcessInfo.processInfo.environment[@"MC_WAIT_FOR_DEBUGGER"]).boolValue) {
@@ -58,4 +82,6 @@ __attribute__((constructor)) static void init() {
     mc_DBDashboardLayoutEngine::hasEmbeddedSecondaryContentArea::swizzle();
     mc_DBEnvironmentConfiguration::hasDualStatusBar::swizzle();
     mc_DBDashboardHomeViewController::_shouldHideTodayView::swizzle();
+    mc_DBStatusBarStateProvider::_radarItemVisible::swizzle();
+    mc_DBStatusBarStateProvider::_radarItemEnabled::swizzle();
 }
